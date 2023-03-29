@@ -84,5 +84,7 @@ while True:
     for i in range(juego.height):
         for j in range(juego.width):
             pygame.draw.rect(screen,GRAY,[juego.x+juego.celda*j, juego.y + juego.celda *i, juego.celda, juego.celda],1)
+            if juego.tabla[i][j] > 0:
+                pygame.draw.rect(screen,BLACK,[juego.x+juego.celda*j+1, juego.y + juego.celda *i-2, juego.celda-2, juego.celda-2])
 
     pygame.display.flip()
