@@ -155,6 +155,9 @@ screen = pygame.display.set_mode((screen_width, screen_height))
 pygame.display.set_caption("Tetris")
 juego=Tetris(20,10)
 contador=0
+tecla_abajo_presionada=False
+tecla_derecha_presionada=False
+tecla_izquierda_presionada=False
 
 # Bucle principal del juego
 while True:
@@ -170,6 +173,13 @@ while True:
         if contador % 50 == 0 and juego.nivel>5:
             juego.mueve_abajo()
 
+    if tecla_abajo_presionada==True and contador % 25 ==0:
+        juego.mueve_abajo()
+    if tecla_derecha_presionada==True and contador % 100 ==0:
+        juego.mueve_lateral(1)
+    if tecla_izquierda_presionada==True and contador % 100 ==0:
+        juego.mueve_lateral(-1)
+
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
@@ -177,13 +187,23 @@ while True:
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_DOWN:
                 juego.mueve_abajo()
+                tecla_abajo_presionada = True
             if event.key == pygame.K_LEFT:
                 juego.mueve_lateral(-1)
+                tecla_izquierda_presionada = True
             if event.key == pygame.K_RIGHT:
                 juego.mueve_lateral(1)
+                tecla_derecha_presionada = True
             if event.key == pygame.K_UP:
                 juego.rota_pieza()
         
+        if event.type == pygame.KEYUP:
+            if event.key == pygame.K_DOWN:
+                tecla_abajo_presionada = False
+            if event.key == pygame.K_LEFT:
+                tecla_izquierda_presionada = False
+            if event.key == pygame.K_RIGHT:
+                tecla_derecha_presionada = False
                 
 
 
