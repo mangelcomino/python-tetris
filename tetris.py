@@ -54,6 +54,7 @@ class Tetris:
         self.celda=20
         self.puntos=0
         self.figura_actual=None
+        self.nivel=1
 
         self.height=height
         self.width=witdh
@@ -122,6 +123,8 @@ class Tetris:
                     for j in range(self.width):
                         self.tabla[i1][j]=self.tabla[i1-1][j]
         self.puntos+=lineas
+        if self.puntos>0:
+            self.nivel= (self.puntos // 10) +1
 
                 
 
@@ -151,12 +154,21 @@ GRAY = (128, 128, 128)
 screen = pygame.display.set_mode((screen_width, screen_height))
 pygame.display.set_caption("Tetris")
 juego=Tetris(20,10)
+contador=0
 
 # Bucle principal del juego
 while True:
     if juego.figura_actual is None:
         juego.nueva_figura()
+    contador +=1
+    if contador > 100000:
+        contador=0
 
+    if contador % (300 -  juego.nivel * 50) == 0 and juego.nivel<6:
+        juego.mueve_abajo()
+    else:
+        if contador % 50 == 0 and juego.nivel>5:
+            juego.mueve_abajo()
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -171,15 +183,17 @@ while True:
                 juego.mueve_lateral(1)
             if event.key == pygame.K_UP:
                 juego.rota_pieza()
-
+        
                 
 
 
     screen.fill(WHITE)
 
     fuente=pygame.font.SysFont('Calibri',25,True,False)
-    texto_marcador=fuente.render("Puntos " + str(juego.puntos),True,BLACK)    
+    texto_marcador=fuente.render("Puntos " + str(juego.puntos),True,BLACK)
+    texto_nivel=fuente.render("Nivel " + str(juego.nivel),True,GRAY)    
     screen.blit(texto_marcador,[0,0])
+    screen.blit(texto_nivel,[150,0])
     #dibujamos la tabla actual
     for i in range(juego.height):
         for j in range(juego.width):
