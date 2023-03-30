@@ -69,13 +69,34 @@ class Tetris:
         self.figura_actual=Figura(3,0)
 
     def mueve_abajo(self):
+        antiguo_y=self.figura_actual.y
         self.figura_actual.y +=1
+        if self.choca():
+            self.figura_actual.y=antiguo_y
 
     def mueve_lateral(self, dx):
+        antiguo_x=self.figura_actual.x
         self.figura_actual.x += dx
+        if self.choca():
+            self.figura_actual.x=antiguo_x
+
     
     def rota_pieza(self):
+        antigua_rotacion=self.figura_actual.rotacion
         self.figura_actual.rotacion = (self.figura_actual.rotacion+1) % (len(self.figura_actual.figuras[self.figura_actual.tipo]))
+        if self.choca():
+            self.figura_actual.rotacion=antigua_rotacion
+
+    def choca(self):
+        choque=False
+        for i in range(4):
+            for j in range (4):
+                p= i * 4 + j
+                if p in self.figura_actual.rotacion_actual():
+                    if j+ self.figura_actual.x > self.width-1 or j+self.figura_actual.x<0 or i + self.figura_actual.y > self.height-1 or \
+                        self.tabla[i+self.figura_actual.y][j+self.figura_actual.x]>0:
+                        choque=True
+        return choque
 
 # Crea la ventana
 #screen = pygame.display.set_mode((screen_width, screen_height))
