@@ -75,6 +75,7 @@ class Tetris:
         if self.choca():
             self.figura_actual.y=antiguo_y
             self.consolida()
+            self.chequea_lineas()
 
     def mueve_lateral(self, dx):
         antiguo_x=self.figura_actual.x
@@ -107,6 +108,22 @@ class Tetris:
                 if p in self.figura_actual.rotacion_actual():
                     self.tabla[i + self.figura_actual.y][j + self.figura_actual.x] = self.figura_actual.color
         self.nueva_figura()
+
+    def chequea_lineas(self):
+        lineas=0
+        for i in range(1,self.height):
+            ceros=0
+            for j in range(self.width):
+                if self.tabla[i][j] == 0:
+                    ceros+=1
+            if ceros == 0:
+                lineas+=1
+                for i1 in range(i,1,-1):
+                    for j in range(self.width):
+                        self.tabla[i1][j]=self.tabla[i1-1][j]
+        self.puntos+=lineas
+
+                
 
 
 # Crea la ventana
