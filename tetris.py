@@ -1,4 +1,5 @@
 import pygame
+import random
 
 # Inicializa Pygame
 pygame.init()
@@ -13,6 +14,16 @@ matrix_height = 20
 screen_width=400
 screen_height=500
 
+colores=[
+    (0,255,255),
+    (255,0,0),
+    (0,255,0),
+    (0,0,255),
+    (255,128,0),
+    (128,0,128),
+    (255,255,0)
+]
+
 #Define las piezaS
 class Figura:
     figuras =[
@@ -24,12 +35,24 @@ class Figura:
         [[1, 4, 5, 6], [1, 4, 5, 9], [4, 5, 6, 9], [1, 5, 6, 9]],
         [[1, 2, 5, 6]]
     ]
+    def __init__(self,x,y):
+        self.x=x
+        self.y=y
+        i=random.randint(0,len(self.figuras)-1)
+        self.tipo=i
+        self.color=i
+        self.rotacion=0
+    
+    def rotacion_actual(self):
+        return self.figuras[self.tipo][self.rotacion]
 
 class Tetris:
     def __init__(self, height, witdh):
         self.height=0
         self.width=0
         self.celda=20
+        self.puntos=0
+        self.figura_actual=None
 
         self.height=height
         self.width=witdh
@@ -41,6 +64,15 @@ class Tetris:
             for j in range(witdh):
                 new_line.append(0)
             self.tabla.append(new_line)
+
+    def nueva_figura(self):
+        self.figura_actual=Figura(3,0)
+
+    def mueve_abajo(self):
+        self.figura_actual.y +=1
+
+    def mueve_lateral(self, dx):
+        self.figura_actual.x += dx
 
 # Crea la ventana
 #screen = pygame.display.set_mode((screen_width, screen_height))
@@ -70,21 +102,43 @@ juego=Tetris(20,10)
 
 # Bucle principal del juego
 while True:
+    if juego.figura_actual is None:
+        juego.nueva_figura()
+
+
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
             quit()
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_DOWN:
+                juego.mueve_abajo()
+            if event.key == pygame.K_LEFT:
+                juego.mueve_lateral(-1)
+            if event.key == pygame.K_RIGHT:
+                juego.mueve_lateral(1)
+                
 
 
     screen.fill(WHITE)
 
     fuente=pygame.font.SysFont('Calibri',25,True,False)
-    texto_marcador=fuente.render("Puntos",True,BLACK)    
+    texto_marcador=fuente.render("Puntos " + str(juego.puntos),True,BLACK)    
     screen.blit(texto_marcador,[0,0])
+    #dibujamos la tabla actual
     for i in range(juego.height):
         for j in range(juego.width):
             pygame.draw.rect(screen,GRAY,[juego.x+juego.celda*j, juego.y + juego.celda *i, juego.celda, juego.celda],1)
             if juego.tabla[i][j] > 0:
                 pygame.draw.rect(screen,BLACK,[juego.x+juego.celda*j+1, juego.y + juego.celda *i-2, juego.celda-2, juego.celda-2])
+    #digujamos la pieza actual
+    if juego.figura_actual is not None:
+        for i in range(4):
+            for j in range(4):
+                p = i * 4 + j
+                if p in juego.figura_actual.rotacion_actual():
+                    pygame.draw.rect(screen,colores[juego.figura_actual.color],
+                                     [juego.x + juego.celda * (j + juego.figura_actual.x)+1, juego.y + juego.celda * (i + juego.figura_actual.y)+1,juego.celda-2,juego.celda-2])
+
 
     pygame.display.flip()
