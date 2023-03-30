@@ -73,6 +73,9 @@ class Tetris:
 
     def mueve_lateral(self, dx):
         self.figura_actual.x += dx
+    
+    def rota_pieza(self):
+        self.figura_actual.rotacion = (self.figura_actual.rotacion+1) % (len(self.figura_actual.figuras[self.figura_actual.tipo]))
 
 # Crea la ventana
 #screen = pygame.display.set_mode((screen_width, screen_height))
@@ -117,6 +120,9 @@ while True:
                 juego.mueve_lateral(-1)
             if event.key == pygame.K_RIGHT:
                 juego.mueve_lateral(1)
+            if event.key == pygame.K_UP:
+                juego.rota_pieza()
+
                 
 
 
