@@ -15,6 +15,7 @@ screen_width=400
 screen_height=500
 
 colores=[
+    (0,0,0),
     (0,255,255),
     (255,0,0),
     (0,255,0),
@@ -40,7 +41,7 @@ class Figura:
         self.y=y
         i=random.randint(0,len(self.figuras)-1)
         self.tipo=i
-        self.color=i
+        self.color=i+1
         self.rotacion=0
     
     def rotacion_actual(self):
@@ -73,6 +74,7 @@ class Tetris:
         self.figura_actual.y +=1
         if self.choca():
             self.figura_actual.y=antiguo_y
+            self.consolida()
 
     def mueve_lateral(self, dx):
         antiguo_x=self.figura_actual.x
@@ -97,6 +99,15 @@ class Tetris:
                         self.tabla[i+self.figura_actual.y][j+self.figura_actual.x]>0:
                         choque=True
         return choque
+    
+    def consolida(self):
+        for i in range(4):
+            for j in range (4):
+                p= i * 4 + j
+                if p in self.figura_actual.rotacion_actual():
+                    self.tabla[i + self.figura_actual.y][j + self.figura_actual.x] = self.figura_actual.color
+        self.nueva_figura()
+
 
 # Crea la ventana
 #screen = pygame.display.set_mode((screen_width, screen_height))
@@ -157,7 +168,7 @@ while True:
         for j in range(juego.width):
             pygame.draw.rect(screen,GRAY,[juego.x+juego.celda*j, juego.y + juego.celda *i, juego.celda, juego.celda],1)
             if juego.tabla[i][j] > 0:
-                pygame.draw.rect(screen,BLACK,[juego.x+juego.celda*j+1, juego.y + juego.celda *i-2, juego.celda-2, juego.celda-2])
+                pygame.draw.rect(screen,colores[juego.tabla[i][j]],[juego.x + juego.celda*j +1, juego.y + juego.celda * i + 1, juego.celda-2, juego.celda-2])
     #digujamos la pieza actual
     if juego.figura_actual is not None:
         for i in range(4):
