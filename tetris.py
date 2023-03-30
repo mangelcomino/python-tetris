@@ -55,6 +55,7 @@ class Tetris:
         self.puntos=0
         self.figura_actual=None
         self.nivel=1
+        self.estado="jugando"
 
         self.height=height
         self.width=witdh
@@ -109,6 +110,8 @@ class Tetris:
                     self.tabla[i + self.figura_actual.y][j + self.figura_actual.x] = self.figura_actual.color
         self.nueva_figura()
         self.chequea_lineas()
+        if self.choca()==True:
+            self.estado="game over"
         
     def chequea_lineas(self):
         lineas=0
@@ -158,6 +161,8 @@ contador=0
 tecla_abajo_presionada=False
 tecla_derecha_presionada=False
 tecla_izquierda_presionada=False
+reloj=pygame.time.Clock()
+fps=25
 
 # Bucle principal del juego
 while True:
@@ -167,17 +172,17 @@ while True:
     if contador > 100000:
         contador=0
 
-    if contador % (300 -  juego.nivel * 50) == 0 and juego.nivel<6:
+    if contador % (fps -  juego.nivel*10) == 0 and juego.nivel<10 and juego.estado=="jugando":
         juego.mueve_abajo()
     else:
-        if contador % 50 == 0 and juego.nivel>5:
+        if contador % 1 == 0 and juego.nivel>9 and juego.estado=="jugando":
             juego.mueve_abajo()
 
-    if tecla_abajo_presionada==True and contador % 25 ==0:
+    if tecla_abajo_presionada==True and contador % 2 ==0 and juego.estado=="jugando":
         juego.mueve_abajo()
-    if tecla_derecha_presionada==True and contador % 100 ==0:
+    if tecla_derecha_presionada==True and contador % 5 ==0 and juego.estado=="jugando":
         juego.mueve_lateral(1)
-    if tecla_izquierda_presionada==True and contador % 100 ==0:
+    if tecla_izquierda_presionada==True and contador % 5 ==0 and juego.estado=="jugando":
         juego.mueve_lateral(-1)
 
     for event in pygame.event.get():
@@ -186,7 +191,7 @@ while True:
             quit()
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_DOWN:
-                juego.mueve_abajo()
+                #juego.mueve_abajo()
                 tecla_abajo_presionada = True
             if event.key == pygame.K_LEFT:
                 juego.mueve_lateral(-1)
@@ -196,7 +201,10 @@ while True:
                 tecla_derecha_presionada = True
             if event.key == pygame.K_UP:
                 juego.rota_pieza()
-        
+            if event.key == pygame.K_ESCAPE:
+                if juego.estado=="game over":
+                    juego.__init__(20,10)
+
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_DOWN:
                 tecla_abajo_presionada = False
@@ -211,9 +219,12 @@ while True:
 
     fuente=pygame.font.SysFont('Calibri',25,True,False)
     texto_marcador=fuente.render("Puntos " + str(juego.puntos),True,BLACK)
-    texto_nivel=fuente.render("Nivel " + str(juego.nivel),True,GRAY)    
+    texto_nivel=fuente.render("Nivel " + str(juego.nivel),True,GRAY)
+    texto_game_over =fuente.render("GAME OVER",True,BLACK)    
     screen.blit(texto_marcador,[0,0])
     screen.blit(texto_nivel,[150,0])
+    if juego.estado == "game over":
+        screen.blit(texto_game_over,[20,200])
     #dibujamos la tabla actual
     for i in range(juego.height):
         for j in range(juego.width):
@@ -229,5 +240,5 @@ while True:
                     pygame.draw.rect(screen,colores[juego.figura_actual.color],
                                      [juego.x + juego.celda * (j + juego.figura_actual.x)+1, juego.y + juego.celda * (i + juego.figura_actual.y)+1,juego.celda-2,juego.celda-2])
 
-
+    reloj.tick(fps)
     pygame.display.flip()
